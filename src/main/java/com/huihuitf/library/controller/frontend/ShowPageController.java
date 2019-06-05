@@ -11,4 +11,9 @@ public class ShowPageController {
     public String login(){
         return "html/user/login";
     }
+
+    @GetMapping("/register")
+    public String register(){
+        return "html/user/register";
+    }
 }
