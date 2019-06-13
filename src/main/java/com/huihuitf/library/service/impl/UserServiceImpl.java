@@ -4,13 +4,15 @@ import com.huihuitf.library.Exception.UserException;
 import com.huihuitf.library.dao.UserDao;
 import com.huihuitf.library.dto.UserExecution;
 import com.huihuitf.library.entity.User;
-import com.huihuitf.library.service.UserService;
 import com.huihuitf.library.enums.UserStateEnum;
+import com.huihuitf.library.service.UserService;
+import com.huihuitf.library.util.ImageUtil;
+import com.huihuitf.library.util.PathUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override
-    public UserExecution addUser(User user) {
+    public UserExecution addUser(User user, MultipartFile headImg) {
         if (user == null || user.getUserId() == null) {
             return new UserExecution(UserStateEnum.NULL_USER);
         }
@@ -30,8 +32,15 @@ public class UserServiceImpl implements UserService {
                 return new UserExecution(UserStateEnum.ID_EXIST);
             }
 
+            //设置用户初始值
             user.setCreateTime(new Date());
             user.setUpdateTime(new Date());
+
+            if(headImg!=null)
+                addUserImg(user,headImg);
+            else{
+                return new UserExecution(UserStateEnum.NULL_IMG);
+            }
 
             if (userDao.save(user) != null)
                 return new UserExecution(UserStateEnum.SUCCESS, user);
@@ -42,23 +51,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Override
-    public UserExecution addUsers(List<User> userList) {
-        if (userList == null) {
-            return new UserExecution(UserStateEnum.NULL_USER);
-        }
-        try {
-            List<User> userSuccessList = new ArrayList<>();
-            for (User u : userList) {
-                u.setCreateTime(new Date());
-                u.setUpdateTime(new Date());
-                if (u.getUserId() != null)
-                    userSuccessList.add(userDao.save(u));
-            }
-            return new UserExecution(UserStateEnum.SUCCESS, userSuccessList);
-        } catch (Exception e) {
-            throw new UserException("增加失败" + e.getMessage());
-        }
+    private void addUserImg(User user, MultipartFile headImg) {
+        String dest= PathUtil.getUserImagePath(user.getUserId());
+        String shopImgAddr= ImageUtil.generateThumbnail(headImg,dest);
+        user.setHeadImg(shopImgAddr);
     }
 
     @Override
@@ -150,6 +146,13 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new UserException("查询出错" + e.getMessage());
         }
+    }
+
+    @Override
+    public Long queryMaxUserId() {
+        Long userId=userDao.queryMaxUser();
+        if(userId==null) userId=10000L;
+        return userId;
     }
 
     @Override

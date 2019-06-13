@@ -18,9 +18,13 @@ $(function () {
             cache: false,
             success: function (data) {
                 if (data.success) {
-                    alert("成功");
+                    layer.msg('登陆成功');
+                    setTimeout(function(){
+                        $(location).attr('href', 'http://www.dangdang.com/');
+                    },2000);
+
                 } else {
-                    alert("失败");
+                    layer.msg('密码输错啦。。', {icon: 5});
                 }
             }
         })

@@ -10,7 +10,8 @@ public enum UserStateEnum {
     ID_EXIST(1007,"id已经存在"),
     NULL_USER(1004,"userId为空"),
     DELETE_ERROR(1005,"删除失败"),
-    ADD_ERROR(1006,"添加失败");
+    ADD_ERROR(1006,"添加失败"),
+    NULL_IMG(1007,"图片为空");
 
 
     private int state;

@@ -13,6 +13,9 @@ public interface UserDao extends JpaRepository<User,Long> {
 
     User queryUserByUserId(Long userId);
 
+    @Query("SELECT MAX(userId) from User ")
+    Long queryMaxUser();
+
     @Modifying
     @Query("update User set password=:newPassword where userId=:userId and password=:oldPassword")
     int modifyPasswordByUserId(@Param("userId")Long userId, @Param("oldPassword") String oldPassword,@Param("newPassword") String newPassword);

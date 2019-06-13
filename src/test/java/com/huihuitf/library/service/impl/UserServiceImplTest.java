@@ -27,34 +27,12 @@ public class UserServiceImplTest {
         user.setPassword("736549664@qq.com");
         user.setUserId(111111111L);
         user.setPhoneNum("13992543350");
-        UserExecution userExecution = userService.addUser(user);
-        System.out.println(userExecution);
+        //UserExecution userExecution = userService.addUser(user);
+       // System.out.println(userExecution);
 
     }
 
-    @Test
-    public void addUsers() {
-        User user =new User();
-        user.setName("江泽晖");
-        user.setGender("男");
-        user.setPassword("123456");
-        user.setPassword("736549664@qq.com");
-        user.setUserId(111111111L);
-        user.setPhoneNum("13992543350");
 
-        User user2 =new User();
-        user2.setName("江泽晖");
-        user2.setGender("男");
-        user2.setPassword("123456");
-        user2.setUserId(222222222L);
-        user2.setPhoneNum("13992543350");
-        List<User>  userList=new ArrayList<>();
-        userList.add(user);
-        userList.add(user2);
-        UserExecution userExecution=userService.addUsers(userList);
-        System.out.println(userExecution.getUserList());
-
-    }
 
     @Test
     public void deleteUser() {
