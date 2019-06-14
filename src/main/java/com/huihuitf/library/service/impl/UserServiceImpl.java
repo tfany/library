@@ -1,10 +1,8 @@
 package com.huihuitf.library.service.impl;
 
-import com.huihuitf.library.Exception.UserException;
 import com.huihuitf.library.dao.UserDao;
-import com.huihuitf.library.dto.UserExecution;
+import com.huihuitf.library.dto.UserDto;
 import com.huihuitf.library.entity.User;
-import com.huihuitf.library.enums.UserStateEnum;
 import com.huihuitf.library.service.UserService;
 import com.huihuitf.library.util.ImageUtil;
 import com.huihuitf.library.util.PathUtil;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,149 +21,132 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
 
+    /**
+     * 增加用户
+     *
+     * @param user
+     * @param headImg
+     * @return
+     */
     @Override
-    public UserExecution addUser(User user, MultipartFile headImg) {
-        if (user == null || user.getUserId() == null) {
-            return new UserExecution(UserStateEnum.NULL_USER);
-        }
-        try {
-            if (userDao.existsById(user.getUserId())) {
-                return new UserExecution(UserStateEnum.ID_EXIST);
-            }
+    public User addUser(User user, MultipartFile headImg) {
 
-            //设置用户初始值
-            user.setCreateTime(new Date());
-            user.setUpdateTime(new Date());
+        //设置用户初始值
+        user.setUserId(queryMaxUserId()+1L);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
 
-            if(headImg!=null)
-                addUserImg(user,headImg);
-            else{
-                return new UserExecution(UserStateEnum.NULL_IMG);
-            }
+        //设置用户头像 并存盘
+        addUserImg(user, headImg);
 
-            if (userDao.save(user) != null)
-                return new UserExecution(UserStateEnum.SUCCESS, user);
-            return new UserExecution(UserStateEnum.ADD_ERROR);
-        } catch (Exception e) {
-            throw new UserException("增加出错" + e.getMessage());
-        }
+
+        return userDao.save(user);
+
 
     }
 
+    /**
+     * 设置头像
+     *
+     * @param user
+     * @param headImg
+     */
     private void addUserImg(User user, MultipartFile headImg) {
-        String dest= PathUtil.getUserImagePath(user.getUserId());
-        String shopImgAddr= ImageUtil.generateThumbnail(headImg,dest);
+        String dest = PathUtil.getUserImagePath(user.getUserId());
+        String shopImgAddr = ImageUtil.generateThumbnail(headImg, dest);
         user.setHeadImg(shopImgAddr);
     }
 
+    /**
+     * 删除用户
+     *
+     * @param user
+     */
     @Override
-    public UserExecution deleteUser(User user) {
-        if (user == null || user.getUserId() == null)
-            return new UserExecution(UserStateEnum.NULL_USER);
-        try {
-            if (!userDao.existsById(user.getUserId()))
-                return new UserExecution(UserStateEnum.DELETE_ERROR);
-            userDao.delete(user);
-            return new UserExecution(UserStateEnum.SUCCESS, user);
-        } catch (Exception e) {
-            throw new UserException("删除User失败" + e.getMessage());
-        }
+    public void deleteUser(User user) {
+        userDao.delete(user);
     }
 
+    /**
+     * 批量删除用户
+     *
+     * @param userList
+     */
     @Override
-    public UserExecution deleteUsers(List<User> userList) {
-        if (userList == null) {
-            return new UserExecution(UserStateEnum.NULL_USER);
-        }
-        try {
-            userDao.deleteAll(userList);
-            return new UserExecution(UserStateEnum.SUCCESS, userList);
-        } catch (Exception e) {
-            throw new UserException("批量删除出错");
-        }
+    public void deleteUsers(List<User> userList) {
+
+        userDao.deleteAll(userList);
+
     }
 
+    /**
+     * 修改密码
+     *
+     * @param userId
+     * @param oldPassword
+     * @param newPassword
+     * @return 失败返回0 成功返回1
+     */
     @Override
-    public UserExecution modifyPasswordByUserId(Long userId, String oldPassword, String newPassword) {
-        if (userId == null || oldPassword == null || newPassword == null) {
-            return new UserExecution(UserStateEnum.NULL_USER);
+    public int modifyPasswordByUserId(Long userId, String oldPassword, String newPassword) {
+        User user = userDao.getOne(userId);
+        if (user == null) {
+            return 0;
         }
-        try {
-            if (userDao.existsById(userId)) {
-                if (oldPassword.equals(userDao.queryUserByUserId(userId).getPassword())) {
-                    int result = userDao.modifyPasswordByUserId(userId, oldPassword, newPassword);
-                    if (result == 1) {
-                        User user = userDao.queryUserByUserId(userId);
-                        user.setUpdateTime(new Date());
-                        userDao.save(user);
-                        return new UserExecution(UserStateEnum.SUCCESS, user);
-                    } else {
-                        return new UserExecution(UserStateEnum.UPDATE_ERROR);
-                    }
-                } else {
-                    return new UserExecution(UserStateEnum.UPDATE_ERROR);
-                }
-            } else {
-                return new UserExecution(UserStateEnum.UPDATE_ERROR);
-            }
-        } catch (Exception e) {
-            throw new UserException("修改密码出错" + e.getMessage());
-        }
+        if (user.getPassword().equals(oldPassword)) user.setPassword(newPassword);
+        return 1;
     }
 
+    /**
+     * 修改user信息
+     * @param user
+     * @return
+     */
     @Override
-    public UserExecution modifyInformation(User newUser) {
-        if (newUser == null || newUser.getUserId() == null) {
-            return new UserExecution(UserStateEnum.NULL_USER);
+    public int modifyInformation(User user) {
+        if (userDao.existsById(user.getUserId())) {
+            userDao.save(user);
+            return 1;
         }
-        try {
-            if (!userDao.existsById(newUser.getUserId())) {
-                return new UserExecution(UserStateEnum.UPDATE_ERROR);
-            }
-            User user = userDao.queryUserByUserId(newUser.getUserId());
-            if (newUser.getName() != null) user.setName(newUser.getName());
-            if (newUser.getGender() != null) user.setGender(newUser.getGender());
-            if (newUser.getPhoneNum() != null) user.setPhoneNum(newUser.getPhoneNum());
-            user.setUpdateTime(new Date());
-            if (newUser.getHeadImg() != null) user.setHeadImg(newUser.getHeadImg());
-            return new UserExecution(UserStateEnum.SUCCESS, user);
-        } catch (Exception e) {
-            throw new UserException("修改信息出错" + e.getMessage());
-        }
+        return 0;
     }
 
+    /**
+     * 判断用户名是否存在 密码是否正确
+     * @param userId
+     * @param password
+     * @return
+     */
     @Override
-    public UserExecution queryUserById(Long userId) {
-        if (userId == null) {
-            return new UserExecution(UserStateEnum.NULL_USER);
-        }
-        try {
-            if(!userDao.existsById(userId))
-                return new UserExecution(UserStateEnum.NULL_USER);
-            User user = userDao.queryUserByUserId(userId);
-            return new UserExecution(UserStateEnum.SUCCESS, user);
-        } catch (Exception e) {
-            throw new UserException("查询出错" + e.getMessage());
-        }
+    public boolean passwordIsTrue(Long userId, String password) {
+        if(userDao.existsById(userId))
+            return userDao.getOne(userId).getPassword().equals(password);
+        return false;
     }
 
+    /**
+     * 查询用户 可以通过id name phone
+     * @param user
+     * @return
+     */
+    @Override
+    public List<UserDto> queryUser(User user) {
+        List<UserDto> userDtos=new ArrayList<>();
+        UserDto userDto;
+        List<User> userList = userDao.queryUserByUserIdOrNameOrPhoneNum(user.getUserId(),user.getName(),user.getPhoneNum());
+        for (User u : userList) {
+            userDto=new UserDto(u);
+            userDtos.add(userDto);
+        }
+        return userDtos;
+    }
+
+    /**
+     * 主键规则
+     * @return
+     */
     @Override
     public Long queryMaxUserId() {
-        Long userId=userDao.queryMaxUser();
-        if(userId==null) userId=10000L;
-        return userId;
-    }
-
-    @Override
-    public UserExecution queryUserByName(String name) {
-        if (name == null) {
-            return new UserExecution(UserStateEnum.NULL_USER);
-        }
-        try {
-            List<User> userList = userDao.queryUsersByName(name);
-            return new UserExecution(UserStateEnum.SUCCESS, userList);
-        } catch (Exception e) {
-            throw new UserException("批量查询出错" + e.getMessage());
-        }
+        return userDao.queryMaxUser()==null?10000L:userDao.queryMaxUser();
     }
 }

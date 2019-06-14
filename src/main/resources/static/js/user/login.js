@@ -21,7 +21,7 @@ $(function () {
                     layer.msg('登陆成功');
                     setTimeout(function(){
                         $(location).attr('href', 'http://www.dangdang.com/');
-                    },2000);
+                    },1000);
 
                 } else {
                     layer.msg('密码输错啦。。', {icon: 5});

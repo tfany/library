@@ -1,16 +1,16 @@
 package com.huihuitf.library.service.impl;
 
-import com.huihuitf.library.dto.UserExecution;
 import com.huihuitf.library.entity.User;
 import com.huihuitf.library.service.UserService;
+import com.huihuitf.library.util.FileToMult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -19,15 +19,16 @@ public class UserServiceImplTest {
     private UserService userService;
 
     @Test
-    public void addUser() {
+    public void addUser() throws IOException {
         User user =new User();
         user.setName("江泽晖");
         user.setGender("男");
         user.setPassword("123456");
         user.setPassword("736549664@qq.com");
-        user.setUserId(111111111L);
+        user.setUserId(123456L);
         user.setPhoneNum("13992543350");
-        //UserExecution userExecution = userService.addUser(user);
+        MultipartFile file= FileToMult.getCommonsMult("C:\\Users\\huige\\Pictures\\girl1.png");
+        User user1 = userService.addUser(user,file);
        // System.out.println(userExecution);
 
     }
@@ -39,23 +40,18 @@ public class UserServiceImplTest {
         User user = new User();
         //html.setUserId(111111111L);
         user.setName("江泽晖");
-        UserExecution userExecution=userService.deleteUser(user);
-        System.out.println(userExecution);
+        userService.deleteUser(user);
     }
 
     @Test
     public void deleteUsers() {
         User user = new User();
-        user.setUserId(222222222L);
-        List<User> userList=new ArrayList<>();
-        userList.add(user);
-        UserExecution userExecution=userService.deleteUsers(userList);
-        System.out.println(userExecution);
+        user.setUserId(10001L);
     }
 
     @Test
     public void modifyPasswordByUserId() {
-        UserExecution userExecution=userService.modifyPasswordByUserId(111111111L,"736549664@qq.com","132456");
+        int userExecution=userService.modifyPasswordByUserId(111111111L,"736549664@qq.com","132456");
         System.out.println(userExecution);
     }
 
@@ -66,19 +62,8 @@ public class UserServiceImplTest {
         user.setGender("女");
         user.setUserId(111111111L);
         user.setPhoneNum("13992543350");
-        UserExecution userExecution=userService.modifyInformation(user);
+        int userExecution=userService.modifyInformation(user);
         System.out.println(userExecution);
     }
 
-    @Test
-    public void queryUserById() {
-        UserExecution userExecution=userService.queryUserById(111L);
-        System.out.println(userExecution.getUser());
-    }
-
-    @Test
-    public void queryUserByName() {
-        UserExecution userExecution=userService.queryUserByName("江泽晖");
-        System.out.println(userExecution.getUserList());
-    }
 }

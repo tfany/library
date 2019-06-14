@@ -1,9 +1,7 @@
 package com.huihuitf.library.controller.frontend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.huihuitf.library.dto.UserExecution;
 import com.huihuitf.library.entity.User;
-import com.huihuitf.library.enums.UserStateEnum;
 import com.huihuitf.library.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -42,31 +40,30 @@ public class UserController {
             return modelMap;
         }
         try {
-            UserExecution userExecution = userService.queryUserById(cardId);
-            // 用户名和密码匹配时才可以登陆
-            if (userExecution.getState() == UserStateEnum.SUCCESS.getState()
-                    && userExecution.getUser().getPassword().equals(password)) {
-                modelMap.addAttribute("success", true);
+            // 用户名存在且密码匹配时才可以登陆
+            if (userService.passwordIsTrue(cardId,password)) {
+
+                //设置session信息
                 HttpSession session = request.getSession();
-                if (session.getAttribute("cardId") == null) {
-                    session.setAttribute("cardId", cardId);
+                if (session.getAttribute("user") == null) {
+                    session.setAttribute("user", userService.queryUser(new User(cardId)).get(0));
                 }
             } else {
                 modelMap.addAttribute("success", false);
-                modelMap.addAttribute("msg", "卡号或密码不正确");
+                modelMap.addAttribute("msg", "用户不存在或密码不正确");
                 return modelMap;
             }
         } catch (Exception e) {
             modelMap.addAttribute("success", false);
-            modelMap.addAttribute("msg", "未知错误！");
+            modelMap.addAttribute("msg", "服务器繁忙，请稍后再试！");
             return modelMap;
         }
-        modelMap.addAttribute("success",true);
+        modelMap.addAttribute("success", true);
         return modelMap;
     }
 
     @PostMapping("/verifyregister")
-    public ModelMap userRegister(HttpServletRequest request, @RequestParam("headImg")MultipartFile headImg) {
+    public ModelMap userRegister(@RequestParam(value="headImg",required = false)MultipartFile headImg) {
 
         ModelMap modelMap = new ModelMap();
         //1.接收并转换相应的参数 包括用户信息以及头像信息
@@ -79,15 +76,23 @@ public class UserController {
             user = mapper.readValue(userInfo, User.class);
         } catch (Exception e) {
             modelMap.addAttribute("success", false);
-            modelMap.addAttribute("msg", "数据出错");
+            modelMap.addAttribute("msg", "违法操作！");
+            return modelMap;
+        }
+
+        //判断手机号是否存在
+        User tempUser=new User();
+        tempUser.setPhoneNum(user.getPhoneNum());
+        if(userService.queryUser(tempUser).size()!=0){
+            modelMap.addAttribute("success", false);
+            modelMap.addAttribute("msg", "手机号已存在！");
             return modelMap;
         }
 
         //2.注册
 
-        if (user != null && headImg != null) {
-            user.setUserId(userService.queryMaxUserId()+1L);
-            userService.addUser(user, headImg);
+        if (headImg != null) {
+           userService.addUser(user, headImg);
         }
         else{
             modelMap.addAttribute("success", false);
@@ -95,6 +100,7 @@ public class UserController {
             return modelMap;
         }
         modelMap.addAttribute("success",true);
+        modelMap.addAttribute("userId",user.getUserId());
         return modelMap;
     }
 }

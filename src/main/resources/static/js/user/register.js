@@ -60,10 +60,10 @@ layui.use(['form', 'layedit', 'laydate', 'upload'], function () {
             cache: false,
             success: function (data) {
                 if (data.success) {
-                    layer.msg('注册成功');
+                    layer.alert('注册成功，卡号为'+data.userId, {icon: 6});
                     setTimeout(function(){
                         $(location).attr('href', '/library/frontend/login');
-                    },2000);
+                    },1000);
 
                 } else {
                     layer.msg('注册失败'+data.msg);

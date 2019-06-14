@@ -23,8 +23,14 @@ public class User {
     private Integer status;
     private String headImg;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "rank",referencedColumnName = "level")
+    @ManyToOne
+    @JoinColumn(name="rank")
     private Rank rank;
 
+    public User(Long userId) {
+        this.userId = userId;
+    }
+
+    public User() {
+    }
 }

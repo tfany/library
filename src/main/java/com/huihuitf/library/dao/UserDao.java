@@ -9,9 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface UserDao extends JpaRepository<User,Long> {
-    List<User> queryUsersByName(String name);
 
-    User queryUserByUserId(Long userId);
+    List<User> queryUserByUserIdOrNameOrPhoneNum(Long userId, String name, String phoneNum);
 
     @Query("SELECT MAX(userId) from User ")
     Long queryMaxUser();
