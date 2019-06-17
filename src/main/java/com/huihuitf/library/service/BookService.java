@@ -6,6 +6,10 @@ import java.util.List;
 
 public interface BookService {
     Book saveBook(Book book);
+    List<Book> saveBooks(List<Book> bookList);
+    void deleteBook(Book book);
+    void deleteBooks(List<Book> bookList);
+    int updateBook(Book book);
     List<Book> queryBookByName(String name);
-    List<Book> findAllBook(int startPage,int endPage);
+    List<Book> findAllBook(int pageNum,int pageSize);
 }
