@@ -7,7 +7,7 @@ $(function () {
         var cardNumber = $('#card-number').val();
         var password = $('#password').val();
         var formData = new FormData();
-        formData.append('cardNumber', cardNumber);
+        formData.append('userId', cardNumber);
         formData.append('password', password);
         $.ajax({
             url: loginUrl,
@@ -17,7 +17,7 @@ $(function () {
             processData: false,
             cache: false,
             success: function (data) {
-                if (data.success) {
+                if (data.code==200) {
                     layer.msg('登陆成功');
                     setTimeout(function(){
                         $(location).attr('href', 'http://www.dangdang.com/');

@@ -66,4 +66,15 @@ public class UserServiceImplTest {
         System.out.println(userExecution);
     }
 
+    @Test
+    public void queryUser(){
+        User user =new User();
+       // user.setName("江泽晖");
+        //user.setGender("女");
+        user.setUserId(10001L);
+        user.setPhoneNum("13992543350");
+        User user1=userService.queryUser(user).get(0);
+        System.out.println(user1);
+    }
+
 }

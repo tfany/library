@@ -1,7 +1,6 @@
 package com.huihuitf.library.service.impl;
 
 import com.huihuitf.library.dao.UserDao;
-import com.huihuitf.library.dto.UserDto;
 import com.huihuitf.library.entity.User;
 import com.huihuitf.library.service.UserService;
 import com.huihuitf.library.util.ImageUtil;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -119,9 +117,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean passwordIsTrue(Long userId, String password) {
-        if(userDao.existsById(userId))
+        if(userDao.existsById(userId)) {
             return userDao.getOne(userId).getPassword().equals(password);
-        return false;
+        }else return userDao.findByPhoneNum(String.valueOf(userId)) != null
+                && userDao.findByPhoneNum(String.valueOf(userId)).getPassword().equals(password);
     }
 
     /**
@@ -130,15 +129,8 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public List<UserDto> queryUser(User user) {
-        List<UserDto> userDtos=new ArrayList<>();
-        UserDto userDto;
-        List<User> userList = userDao.queryUserByUserIdOrNameOrPhoneNum(user.getUserId(),user.getName(),user.getPhoneNum());
-        for (User u : userList) {
-            userDto=new UserDto(u);
-            userDtos.add(userDto);
-        }
-        return userDtos;
+    public List<User> queryUser(User user) {
+        return userDao.queryUserByUserIdOrNameOrPhoneNum(user.getUserId(),user.getName(),user.getPhoneNum());
     }
 
     /**

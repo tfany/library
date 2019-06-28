@@ -12,6 +12,8 @@ public interface UserDao extends JpaRepository<User,Long> {
 
     List<User> queryUserByUserIdOrNameOrPhoneNum(Long userId, String name, String phoneNum);
 
+    User findByPhoneNum(String phoneNum);
+
     @Query("SELECT MAX(userId) from User ")
     Long queryMaxUser();
 
