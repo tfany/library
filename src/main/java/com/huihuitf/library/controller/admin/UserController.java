@@ -1,4 +1,4 @@
-package com.huihuitf.library.controller.frontend;
+package com.huihuitf.library.controller.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huihuitf.library.api.CommonResult;
@@ -50,7 +50,10 @@ public class UserController {
         }
     }
 
-
+    /**
+     * 获取信息
+     * @return
+     */
     @GetMapping("/userinfo")
     public CommonResult userInfo() {
         String token = request.getHeader("token");
@@ -61,7 +64,7 @@ public class UserController {
             } else {
                 user.setUserId(Long.valueOf(token));
             }
-            userService.queryUser(user);
+            user = userService.queryUser(user).get(0);
             Map<String, Object> data = new HashMap<>();
             data.put("username", user.getName());
             data.put("roles", new String[]{"TEST"});
@@ -73,6 +76,21 @@ public class UserController {
         return CommonResult.failed();
     }
 
+    /**
+     * 退出登录
+     * @return success
+     */
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult logout() {
+        return CommonResult.success(null);
+    }
+
+    /**
+     * 注册
+     * @param headImg
+     * @return
+     */
     @PostMapping("/verifyregister")
     public ModelMap userRegister(@RequestParam(value = "headImg", required = false) MultipartFile headImg) {
 

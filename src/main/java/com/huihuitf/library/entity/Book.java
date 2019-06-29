@@ -26,4 +26,5 @@ public class Book {
     @JoinColumn(name = "supplier")
     private Supplier supplier;
     private Integer stock;
+    private String img;
 }

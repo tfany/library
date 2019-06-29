@@ -8,10 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class BookServiceImpl implements BookService {
     @Autowired
     private BookDao bookDao;
@@ -25,8 +27,10 @@ public class BookServiceImpl implements BookService {
     public List<Book> saveBooks(List<Book> bookList) {
         List<Book> books=new ArrayList<>();
         for (Book book : bookList) {
-            if(!bookDao.existsById(book.getBookId()))
+            if(!bookDao.existsById(book.getBookId())) {
+                bookDao.save(book);
                 books.add(book);
+            }
         }
         return books;
     }
@@ -85,9 +89,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> findAllBook(int pageNum, int pageSize) {
-
-        Pageable pageable= PageRequest.of(pageNum,pageSize, Sort.by("DESC"));
+        Sort sort = new Sort(Sort.Direction.ASC,"bookId");
+        Pageable pageable= PageRequest.of(pageNum,pageSize, sort);
         Page<Book> bookPage = bookDao.findAll(pageable);
         return bookPage.getContent();
+    }
+
+    @Override
+    public int queryTotal() {
+        return bookDao.queryTotal();
     }
 }

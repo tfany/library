@@ -12,4 +12,5 @@ public interface BookService {
     int updateBook(Book book);
     List<Book> queryBookByName(String name);
     List<Book> findAllBook(int pageNum,int pageSize);
+    int queryTotal();
 }

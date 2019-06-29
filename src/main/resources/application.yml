@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: tf511925
-    url: jdbc:mysql://localhost/library
+    url: jdbc:mysql://localhost/library?characterEncoding=utf8
 
   jpa:
     hibernate:
