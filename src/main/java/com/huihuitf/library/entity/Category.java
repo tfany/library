@@ -13,4 +13,5 @@ public class Category {
     private String categoryName;
     private String categoryImg;
     private Integer parentId;
+    private String description;
 }

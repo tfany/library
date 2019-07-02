@@ -106,7 +106,7 @@ public class BookServiceImpl implements BookService {
             book.setSupplier(supplier);
             book.setImg(bookParam.getImg());
             //删除原来图片
-            PathUtil.deleteFiles(bookParam.getBookId(),book.getImg());
+            PathUtil.deleteFiles(book.getImg());
 
             bookDao.save(book);
 

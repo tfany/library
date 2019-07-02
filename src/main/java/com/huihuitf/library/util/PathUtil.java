@@ -35,16 +35,17 @@ public class PathUtil {
 
     /**
      * 只保留数据库存在的图片
-     * @param id id
      * @param url url
      */
-    public static void deleteFiles(String id, String url){
-        File file=new File(PathUtil.getImgBasePath()+url.substring(1));
-        if(file.exists()){
-            File[] files=file.getParentFile().listFiles();
-            for (File file1 : files) {
-                if(!file.getName().equals(file1.getName())){
-                    file1.delete();
+    public static void deleteFiles(String url){
+        if(url!=null) {
+            File file = new File(PathUtil.getImgBasePath() + url.substring(1));
+            if (file.exists()) {
+                File[] files = file.getParentFile().listFiles();
+                for (File file1 : files) {
+                    if (!file.getName().equals(file1.getName())) {
+                        file1.delete();
+                    }
                 }
             }
         }
@@ -69,6 +70,11 @@ public class PathUtil {
 
     public static String getBookFaceImagePath(String bookId){
         return "/book/faceBook/" + bookId + "/";
+
+    }
+
+    public static String getCategoryPath(int categoryId){
+        return "/category/" + categoryId + "/";
 
     }
 }

@@ -6,12 +6,15 @@ import com.huihuitf.library.dto.CategoryDto;
 import com.huihuitf.library.dto.CategoryListDto;
 import com.huihuitf.library.entity.Category;
 import com.huihuitf.library.service.CategoryService;
+import com.huihuitf.library.util.ImageUtil;
+import com.huihuitf.library.util.PathUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +56,23 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category save(Category category) {
         category.setCategoryId(categoryDao.queryMaxCategoryId()+1);
+        PathUtil.deleteFiles(category.getCategoryImg());
         return categoryDao.save(category);
+    }
+
+    @Override
+    public int update(Category category) {
+       try{
+           if(categoryDao.existsById(category.getCategoryId())){
+               categoryDao.save(category);
+               PathUtil.deleteFiles(category.getCategoryImg());
+               return 1;
+           }
+           PathUtil.deleteFile(category.getCategoryImg());
+           return 0;
+       }catch (Exception e){
+           return 0;
+       }
     }
 
     @Override
@@ -118,6 +137,19 @@ public class CategoryServiceImpl implements CategoryService {
 
         }
         return categoryListDto;
+    }
+
+    public String addCategoryFace(int category, MultipartFile file) {
+        if(file!=null) {
+            if(category==-1){
+                category=categoryDao.queryMaxCategoryId()+1;
+            }
+            //获取存放路径
+            String dest = PathUtil.getCategoryPath(category);
+            //返回存放地址
+            return ImageUtil.generateThumbnail(file, dest);
+        }
+        return null;
     }
 
 }
