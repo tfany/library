@@ -1,6 +1,7 @@
 package com.huihuitf.library.service.impl;
 
 import com.huihuitf.library.dto.CategoryDto;
+import com.huihuitf.library.dto.CategoryListDto;
 import com.huihuitf.library.entity.Category;
 import com.huihuitf.library.service.CategoryService;
 import org.junit.Assert;
@@ -40,4 +41,12 @@ public class CategoryServiceImplTest {
         List<CategoryDto> list = categoryService.listWithChildren();
         System.out.println(list);
     }
+
+    @Test
+    public void queryAllPage(){
+        CategoryListDto list = categoryService.queryAll(0,0,5);
+        System.out.println(list);
+    }
+
+
 }

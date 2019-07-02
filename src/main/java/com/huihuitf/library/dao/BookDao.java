@@ -11,4 +11,8 @@ public interface BookDao extends JpaRepository<Book,String> {
 
     @Query("SELECT count(bookId) from Book ")
     int queryTotal();
+
+    void deleteBooksByBookIdLike(String id);
+
+    List<Book> queryBooksByBookCategory_CategoryId(Integer bookCategory_categoryId);
 }

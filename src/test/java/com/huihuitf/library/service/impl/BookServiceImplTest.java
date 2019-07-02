@@ -1,5 +1,7 @@
 package com.huihuitf.library.service.impl;
 
+import com.huihuitf.library.dao.BookDao;
+import com.huihuitf.library.dto.BookDto;
 import com.huihuitf.library.entity.Book;
 import com.huihuitf.library.entity.Category;
 import com.huihuitf.library.service.BookService;
@@ -20,19 +22,20 @@ public class BookServiceImplTest {
     @Autowired
     private BookService bookService;
 
+    @Autowired
+    private BookDao bookDao;
+
     @Test
     public void saveBook() {
-        Book book=new Book();
+        BookDto book=new BookDto();
         book.setBookId("ISBN 977-8969-332");
         book.setAuthor("江泽晖");
-        Category category=new Category();
-        category.setCategoryId(8);
-        book.setBookCategory(category);
+        book.setCategoryId(8);
         book.setBookName("西游记");
         book.setPrice(108.4);
         book.setStock(100);
-        Book book1=bookService.saveBook(book);
-        Assert.assertEquals(book.getBookId(),book1.getBookId());
+        int book1=bookService.saveBook((BookDto)book);
+        Assert.assertEquals(book1,1);
 
     }
 
@@ -77,4 +80,6 @@ public class BookServiceImplTest {
         List<Book> bookList = bookService.findAllBook(0,2);
         Assert.assertEquals(bookList.size(),2);
     }
+
+
 }

@@ -1,14 +1,20 @@
 package com.huihuitf.library.service.impl;
 
 import com.huihuitf.library.dao.BookDao;
+import com.huihuitf.library.dto.BookDto;
 import com.huihuitf.library.entity.Book;
+import com.huihuitf.library.entity.Category;
+import com.huihuitf.library.entity.Supplier;
 import com.huihuitf.library.service.BookService;
+import com.huihuitf.library.util.ImageUtil;
+import com.huihuitf.library.util.PathUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,19 +47,32 @@ public class BookServiceImpl implements BookService {
      * @return
      */
     @Override
-    public Book saveBook(Book book) {
+    public int saveBook(BookDto book) {
         if(!bookDao.existsById(book.getBookId()))
-            return bookDao.save(book);
-        else return null;
+            return updateBook(book);
+        else return 0;
     }
 
     /**
      * 删除书籍
-     * @param book
+     * @param bookId
      */
     @Override
-    public void deleteBook(Book book) {
-        bookDao.deleteById(book.getBookId());
+    public int deleteBook(String bookId) {
+
+        if(bookDao.existsById(bookId)){
+            try {
+                //删除图片
+                PathUtil.deleteDir(bookDao.findById(bookId).get().getImg());
+                bookDao.deleteById(bookId);
+                return 1;
+            }catch (Exception e){
+                return 0;
+            }
+        }
+
+        return 0;
+
     }
 
     /**
@@ -68,12 +87,32 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public int updateBook(Book book) {
-        if(bookDao.existsById(book.getBookId())){
-            return 0;
-        }else {
+    public int updateBook(BookDto bookParam) {
+        try {
+            Book book= new Book();
+            book.setBookId(bookParam.getBookId());
+            book.setBookName(bookParam.getBookName());
+            book.setImg(bookParam.getImg());
+            book.setAuthor(bookParam.getAuthor());
+            book.setStock(bookParam.getStock());
+            book.setPrice(bookParam.getPrice());
+            book.setPublicTime(bookParam.getPublicTime());
+            book.setRent(bookParam.getRent());
+            Category category=new Category();
+            Supplier supplier=new Supplier();
+            supplier.setSupplierId(bookParam.getSupplierId());
+            category.setCategoryId(bookParam.getCategoryId());
+            book.setBookCategory(category);
+            book.setSupplier(supplier);
+            book.setImg(bookParam.getImg());
+            //删除原来图片
+            PathUtil.deleteFiles(bookParam.getBookId(),book.getImg());
+
             bookDao.save(book);
-            return 1;
+
+           return 1;
+        }catch (Exception e){
+            return 0;
         }
     }
 
@@ -84,7 +123,27 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public List<Book> queryBookByName(String name) {
-        return bookDao.queryBookByBookNameLike(name);
+        return bookDao.queryBookByBookNameLike("%"+name+"%");
+    }
+
+    @Override
+    public BookDto queryBookById(String bookId) {
+        Book book= bookDao.findById(bookId).orElse(null);
+        BookDto bookDto=new BookDto();
+        bookDto.setBookId(book.getBookId());
+        bookDto.setBookName(book.getBookName());
+        bookDto.setAuthor(book.getAuthor());
+        bookDto.setImg(book.getImg());
+        bookDto.setPrice(book.getPrice());
+        bookDto.setStock(book.getStock());
+        bookDto.setPublicTime(book.getPublicTime());
+
+        bookDto.setCategoryId(book.getBookCategory().getCategoryId());
+        bookDto.setCategoryName(book.getBookCategory().getCategoryName());
+        bookDto.setSupplierId(book.getSupplier().getSupplierId());
+        bookDto.setSupplierName(book.getSupplier().getSupplierName());
+
+        return bookDto;
     }
 
     @Override
@@ -98,5 +157,23 @@ public class BookServiceImpl implements BookService {
     @Override
     public int queryTotal() {
         return bookDao.queryTotal();
+    }
+
+    @Override
+    public String addFace(String bookId, MultipartFile faceBook) {
+
+
+        if(faceBook!=null) {
+            //先把图片存起来
+            String dest = PathUtil.getBookFaceImagePath(bookId);
+            //返回存放路径
+            return ImageUtil.generateThumbnail(faceBook, dest);
+        }
+            return null;
+    }
+
+    @Override
+    public void deleteBooks(String bookId) {
+        bookDao.deleteBooksByBookIdLike("%"+bookId+"%");
     }
 }

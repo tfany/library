@@ -10,12 +10,12 @@ public class PathUtil {
      * windows和linux位置不同
      */
     public static String getImgBasePath(){
-        String basePath="";
+        String basePath;
         String os=System.getProperty("os.name");
         if(os.toLowerCase().startsWith("win")){
             basePath="d:/library/images/";
         }else{
-            basePath="/home/library/images/";
+            basePath="/home/tfany/library/images/";
         }
         return basePath;
     }
@@ -34,12 +34,41 @@ public class PathUtil {
     }
 
     /**
+     * 只保留数据库存在的图片
+     * @param id id
+     * @param url url
+     */
+    public static void deleteFiles(String id, String url){
+        File file=new File(PathUtil.getImgBasePath()+url.substring(1));
+        if(file.exists()){
+            File[] files=file.getParentFile().listFiles();
+            for (File file1 : files) {
+                if(!file.getName().equals(file1.getName())){
+                    file1.delete();
+                }
+            }
+        }
+    }
+
+    public static void deleteDir(String url){
+        File file=new File(PathUtil.getImgBasePath()+url.substring(1));
+        if(file.exists()){
+            file.delete();
+        }
+    }
+
+    /**
      * 获取存放图片的地址
      *
      * @param userId 用户id
      * @return  imagePath 相随地址
      */
     public static String getUserImagePath(long userId){
-        return "/userHeadImg/" + userId + "/";
+        return "/user/headImg/" + userId + "/";
+    }
+
+    public static String getBookFaceImagePath(String bookId){
+        return "/book/faceBook/" + bookId + "/";
+
     }
 }

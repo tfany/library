@@ -29,8 +29,8 @@ public class ImageUtil {
         String relativeAddr = targetAddr + realFileName + extension;
         File dest = new File(PathUtil.getImgBasePath() + relativeAddr);
         try {
-            Thumbnails.of(thumbnail.getInputStream()).size(400, 400)
-                    .outputQuality(0.8f).toFile(dest);
+            Thumbnails.of(thumbnail.getInputStream()).scale(1.0)
+                    .toFile(dest);
         } catch (IOException e) {
             e.printStackTrace();
         }

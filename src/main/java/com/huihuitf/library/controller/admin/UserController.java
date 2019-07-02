@@ -43,10 +43,11 @@ public class UserController {
             // 用户名存在且密码匹配时才可以登陆
             if (userService.passwordIsTrue(cardId, password)) {
                 tokenMap.put("token", String.valueOf(cardId));
+                return CommonResult.success(tokenMap);
             }
-            return CommonResult.success(tokenMap);
-        } catch (Exception e) {
             return CommonResult.failed();
+        } catch (Exception e) {
+            return CommonResult.failed("密码错误！");
         }
     }
 
@@ -60,14 +61,14 @@ public class UserController {
         User user = new User();
         if (token != null) {
             if (token.length() == 11) {
-                user.setPassword(token);
+                user.setPhoneNum(token);
             } else {
                 user.setUserId(Long.valueOf(token));
             }
             user = userService.queryUser(user).get(0);
             Map<String, Object> data = new HashMap<>();
             data.put("username", user.getName());
-            data.put("roles", new String[]{"TEST"});
+            data.put("roles", new String[]{"Manager"});
             data.put("icon", user.getHeadImg());
             return CommonResult.success(data);
         }
