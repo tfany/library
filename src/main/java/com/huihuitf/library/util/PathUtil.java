@@ -39,14 +39,18 @@ public class PathUtil {
      */
     public static void deleteFiles(String url){
         if(url!=null) {
-            File file = new File(PathUtil.getImgBasePath() + url.substring(1));
-            if (file.exists()) {
-                File[] files = file.getParentFile().listFiles();
-                for (File file1 : files) {
-                    if (!file.getName().equals(file1.getName())) {
-                        file1.delete();
+            try {
+                File file = new File(PathUtil.getImgBasePath() + url.substring(1));
+                if (file.exists()) {
+                    File[] files = file.getParentFile().listFiles();
+                    for (File file1 : files) {
+                        if (!file.getName().equals(file1.getName())) {
+                            file1.delete();
+                        }
                     }
                 }
+            }catch (Exception ignored){
+
             }
         }
     }

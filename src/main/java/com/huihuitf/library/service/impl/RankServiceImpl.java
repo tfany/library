@@ -4,6 +4,10 @@ import com.huihuitf.library.dao.RankDao;
 import com.huihuitf.library.entity.Rank;
 import com.huihuitf.library.service.RankService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,5 +51,13 @@ public class RankServiceImpl implements RankService {
     @Override
     public List<Rank> findAllRank() {
         return rankDao.findAll();
+    }
+
+    @Override
+    public List<Rank> findAllRank(int pageNum, int pageSize) {
+        Sort sort = new Sort(Sort.Direction.ASC,"level");
+        Pageable pageable= PageRequest.of(pageNum,pageSize, sort);
+        Page<Rank> rankPage = rankDao.findAll(pageable);
+        return rankPage.getContent();
     }
 }

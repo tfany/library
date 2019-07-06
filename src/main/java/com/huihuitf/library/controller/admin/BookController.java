@@ -4,6 +4,7 @@ import com.huihuitf.library.api.CommonResult;
 import com.huihuitf.library.dto.BookDto;
 import com.huihuitf.library.entity.Book;
 import com.huihuitf.library.service.BookService;
+import com.huihuitf.library.util.PageHelp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@ResponseBody
 @RequestMapping("book")
 public class BookController {
 
@@ -22,16 +22,8 @@ public class BookController {
 
     @GetMapping("/list")
     CommonResult bookList(int pageNum, int pageSize) {
-        int total = bookService.queryTotal();
-        int totalPage = total / pageSize;
-        if (total % pageSize != 0) {
-            totalPage++;
-        }
-        Map<String, Object> list = new HashMap<>();
-        list.put("pageNum", pageNum);
-        list.put("pageSize", pageSize);
-        list.put("total", total);
-        list.put("totalPage", totalPage);
+        Map<String, Object> list=new HashMap<>();
+        PageHelp.pageDeal(pageNum, pageSize, bookService.queryTotal(),list);
         list.put("list", bookService.findAllBook(pageNum - 1, pageSize));
         return CommonResult.success(list);
     }

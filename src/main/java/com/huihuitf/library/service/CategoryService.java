@@ -11,6 +11,7 @@ public interface CategoryService {
     Category queryById(Integer id);
     List<Category> queryAll(Integer parentId);
     Category save(Category category);
+    int delete(Integer id);
     int update(Category category);
     int queryBookByCategoryParent(int parent);
     CategoryListDto queryAll(Integer parentId, int pageNum, int pageSize);

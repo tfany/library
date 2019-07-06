@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@ResponseBody
 @RequestMapping("category")
 public class CategoryController {
     @Autowired
@@ -80,6 +79,16 @@ public class CategoryController {
         categoryService.save(category);
 
         return CommonResult.success(null);
+    }
+
+    @PostMapping(value = "/delete/{id}")
+    public CommonResult delete(@PathVariable Integer id) {
+        int count = categoryService.delete(id);
+        if(count!=0){
+            return CommonResult.success(null);
+        }else {
+            return CommonResult.failed("删除失败");
+        }
     }
 
 

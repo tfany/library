@@ -56,8 +56,25 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category save(Category category) {
         category.setCategoryId(categoryDao.queryMaxCategoryId()+1);
-        PathUtil.deleteFiles(category.getCategoryImg());
+        if(!category.getCategoryImg().equals(""))
+            PathUtil.deleteFiles(category.getCategoryImg());
         return categoryDao.save(category);
+    }
+
+    @Override
+    public int delete(Integer id) {
+
+        try {
+            Category category = categoryDao.findById(id).orElse(new Category());
+            //删除所有子分类
+            if (category.getCategoryId() != null && category.getParentId() == null) {
+                categoryDao.deleteCategoriesByParentId(category.getCategoryId());
+            }
+            categoryDao.deleteById(category.getCategoryId());
+            return 1;
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     @Override
@@ -65,10 +82,11 @@ public class CategoryServiceImpl implements CategoryService {
        try{
            if(categoryDao.existsById(category.getCategoryId())){
                categoryDao.save(category);
-               PathUtil.deleteFiles(category.getCategoryImg());
+               if(!category.getCategoryImg().equals(""))
+                   PathUtil.deleteFiles(category.getCategoryImg());
                return 1;
            }
-           PathUtil.deleteFile(category.getCategoryImg());
+
            return 0;
        }catch (Exception e){
            return 0;

@@ -18,5 +18,6 @@ public interface BookService {
     int queryTotal();
     String addFace(String bookId, MultipartFile faceBook);
     void deleteBooks(String bookId);
+    int queryCountBySupplier(Integer id);
 
 }

@@ -10,5 +10,6 @@ public interface RankService {
     void deleteByLevel(Integer level);
     Rank findRankByLevel(Integer level);
     List<Rank> findAllRank();
+    List<Rank> findAllRank(int pageNum,int pageSize);
 
 }

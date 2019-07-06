@@ -40,7 +40,7 @@ public class UserServiceImplTest {
         User user = new User();
         //html.setUserId(111111111L);
         user.setName("江泽晖");
-        userService.deleteUser(user);
+        userService.deleteUser(110L);
     }
 
     @Test

@@ -6,6 +6,10 @@ import com.huihuitf.library.service.UserService;
 import com.huihuitf.library.util.ImageUtil;
 import com.huihuitf.library.util.PathUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,8 +65,24 @@ public class UserServiceImpl implements UserService {
      * @param user
      */
     @Override
-    public void deleteUser(User user) {
-        userDao.delete(user);
+    public void deleteUser(Long user) {
+        String img= userDao.findById(user).orElse(new User()).getHeadImg();
+        if(img!=null&& !img.equals("")){
+            PathUtil.deleteFiles(img);
+        }
+        userDao.deleteById(user);
+    }
+
+    @Override
+    public String addFace(Long userId, MultipartFile face) {
+
+        if(face!=null) {
+            //先把图片存起来
+            String dest = PathUtil.getUserImagePath(userId);
+            //返回存放路径
+            return ImageUtil.generateThumbnail(face, dest);
+        }
+        return null;
     }
 
     /**
@@ -140,5 +160,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long queryMaxUserId() {
         return userDao.queryMaxUser()==null?10000L:userDao.queryMaxUser();
+    }
+
+    @Override
+    public List<User> listUser(int pageNum, int pageSize) {
+        Sort sort = new Sort(Sort.Direction.ASC,"userId");
+        Pageable pageable= PageRequest.of(pageNum,pageSize, sort);
+        Page<User> bookPage = userDao.findAll(pageable);
+        return bookPage.getContent();
+    }
+
+    @Override
+    public int queryTotal() {
+        return userDao.findAll().size();
     }
 }

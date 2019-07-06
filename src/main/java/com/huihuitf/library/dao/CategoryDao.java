@@ -12,5 +12,6 @@ public interface CategoryDao extends JpaRepository<Category,Integer> {
     List<Category> queryAllByParentId(Integer parent, Pageable page);
     @Query("SELECT MAX(categoryId) from Category")
     Integer queryMaxCategoryId();
+    int deleteCategoriesByParentId(Integer parentId);
 }
 

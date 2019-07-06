@@ -176,4 +176,10 @@ public class BookServiceImpl implements BookService {
     public void deleteBooks(String bookId) {
         bookDao.deleteBooksByBookIdLike("%"+bookId+"%");
     }
+
+    @Override
+    public int queryCountBySupplier(Integer id) {
+        List<Book> list=bookDao.queryBooksBySupplier_SupplierId(id);
+        return list.size();
+    }
 }

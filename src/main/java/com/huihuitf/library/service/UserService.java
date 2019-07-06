@@ -7,14 +7,16 @@ import java.util.List;
 
 public interface UserService {
     User addUser(User user, MultipartFile headImg);
-    void deleteUser(User user);
+    void deleteUser(Long user);
+    String addFace(Long userId, MultipartFile face);
     void deleteUsers(List<User> userList);
     int modifyPasswordByUserId(Long userId,String oldPassword,String newPassword);
     int modifyInformation(User user);
     List<User> queryUser(User user);
     boolean passwordIsTrue(Long userId,String password);
     Long queryMaxUserId();
+    List<User> listUser(int pageNum,int pageSize);
 
 
-
+    int queryTotal();
 }
