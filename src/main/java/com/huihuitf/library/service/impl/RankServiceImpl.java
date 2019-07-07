@@ -39,13 +39,19 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
-    public void deleteByLevel(Integer level) {
-
+    public int deleteByLevel(Integer level) {
+        try {
+            rankDao.deleteById(level);
+            return 1;
+        }
+        catch (Exception e){
+            return 0;
+        }
     }
 
     @Override
     public Rank findRankByLevel(Integer level) {
-        return rankDao.getOne(level);
+        return rankDao.findById(level).orElse(new Rank());
     }
 
     @Override

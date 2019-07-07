@@ -81,4 +81,9 @@ public class PathUtil {
         return "/category/" + categoryId + "/";
 
     }
+
+    public static String getManagerFaceImagePath(Long bookId){
+        return "/Manager/" + bookId + "/";
+
+    }
 }
