@@ -153,15 +153,7 @@ public class UserController {
         }
     }
 
-    /**
-     * 退出登录
-     * @return success
-     */
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult logout() {
-        return CommonResult.success(null);
-    }
+
 
     /**
      * 注册
