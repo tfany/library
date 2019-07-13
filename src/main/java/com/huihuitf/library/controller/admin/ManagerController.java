@@ -50,7 +50,6 @@ public class ManagerController {
             data.put("password", manager.getPassword());
             return CommonResult.success(data);
         }
-        request.setAttribute("token","");
         return CommonResult.failed();
     }
 
