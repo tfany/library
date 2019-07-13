@@ -4,8 +4,10 @@ import com.huihuitf.library.api.CommonResult;
 import com.huihuitf.library.dto.BookDto;
 import com.huihuitf.library.entity.Book;
 import com.huihuitf.library.service.BookService;
+import com.huihuitf.library.service.CategoryService;
 import com.huihuitf.library.util.PageHelp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,13 +22,23 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping("/list")
-    CommonResult bookList(int pageNum, int pageSize) {
+    CommonResult bookList(int pageNum,
+                          int pageSize,
+                          @RequestParam(value = "productSn",required = false) String bookId,
+                          @RequestParam(value = "keyword",required = false) String bookName,
+                          @RequestParam(value = "productCategoryId",required = false) Integer categoryId,
+                          @RequestParam(value = "brandId",required = false)Integer supplierId) {
         Map<String, Object> list=new HashMap<>();
-        PageHelp.pageDeal(pageNum, pageSize, bookService.queryTotal(),list);
-        list.put("list", bookService.findAllBook(pageNum - 1, pageSize));
+        Page<Book> page=bookService.findAllBook(pageNum - 1, pageSize,bookId,bookName,categoryId,supplierId);
+        PageHelp.pageDeal(pageNum, pageSize,(int) page.getTotalElements(),list);
+        list.put("list", page.getContent());
         return CommonResult.success(list);
     }
+
 
     @RequestMapping(value = "/updateInfo/{id}", method = RequestMethod.GET)
     @ResponseBody
@@ -95,9 +107,23 @@ public class BookController {
 
     @RequestMapping(value = "/simpleList", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<List<Book>> getList(String keyword) {
-        List<Book> productList = bookService.queryBookByName(keyword);
+    public CommonResult<List<Book>> getList(String keyWord) {
+        List<Book> productList = bookService.queryBookByNameOrAuthor(keyWord);
         return CommonResult.success(productList);
+    }
+
+    @GetMapping(value = "/getNoParent/{id}")
+    public CommonResult getNoParent(@PathVariable int id){
+        List<Book> bookList;
+        bookList=categoryService.queryBookByCategoryParent(id);
+        return CommonResult.success(bookList);
+    }
+
+    @GetMapping(value = "/getByParent/{id}")
+    public CommonResult getByParent(@PathVariable int id){
+        List<Book> bookList;
+        bookList=bookService.queryBookByCategory(id);
+        return CommonResult.success(bookList);
     }
 
 

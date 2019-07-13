@@ -1,15 +1,16 @@
 package com.huihuitf.library.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 
 
 @Entity
-@Getter
-@Setter
+@Data
 public class Book {
     @Id
     private String bookId;
@@ -26,4 +27,10 @@ public class Book {
     private Supplier supplier;
     private Integer stock;
     private String img;
+
+    public Book() {
+    }
+    public Book(String bookId) {
+        this.setBookId(bookId);
+    }
 }

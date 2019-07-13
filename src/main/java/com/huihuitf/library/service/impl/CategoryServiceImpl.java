@@ -4,6 +4,7 @@ import com.huihuitf.library.dao.BookDao;
 import com.huihuitf.library.dao.CategoryDao;
 import com.huihuitf.library.dto.CategoryDto;
 import com.huihuitf.library.dto.CategoryListDto;
+import com.huihuitf.library.entity.Book;
 import com.huihuitf.library.entity.Category;
 import com.huihuitf.library.service.CategoryService;
 import com.huihuitf.library.util.ImageUtil;
@@ -41,16 +42,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public int queryBookByCategoryParent(int parent) {
-        int count=0;
+    public List<Book> queryBookByCategoryParent(int parent) {
+        List<Book> bookList = new ArrayList<>();
         //得到所有子类
         List<Category> categoryList=categoryDao.queryAllByParentId(parent);
 
         //遍历子分类 查找book
         for(Category category: categoryList){
-            count+=bookDao.queryBooksByBookCategory_CategoryId(category.getCategoryId()).size();
+            bookList.addAll(bookDao.queryBooksByBookCategory_CategoryId(category.getCategoryId()));
         }
-        return count;
+        return bookList;
     }
 
     @Override
@@ -133,7 +134,7 @@ public class CategoryServiceImpl implements CategoryService {
                 map.put("id",category.getCategoryId());
                 map.put("name",category.getCategoryName());
                 map.put("level", 0);
-                map.put("bookCount",queryBookByCategoryParent(category.getCategoryId()));
+                map.put("bookCount",queryBookByCategoryParent(category.getCategoryId()).size());
                 list.add(map);
             }
             categoryListDto.setList(list);

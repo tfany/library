@@ -40,15 +40,18 @@ public class ManagerController {
     @GetMapping("/userinfo")
     public CommonResult userInfo() {
         String token = request.getHeader("token");
-
-        Manager manager = managerService.queryById(Long.valueOf(token));
-        Map<String, Object> data = new HashMap<>();
-        data.put("username", manager.getManagerName());
-        data.put("id", manager.getManagerId());
-        data.put("roles", new String[]{"Manager"});
-        data.put("icon", manager.getHeadImg());
-        data.put("password", manager.getPassword());
-        return CommonResult.success(data);
+        if(managerService.queryById(Long.valueOf(token))!=null) {
+            Manager manager = managerService.queryById(Long.valueOf(token));
+            Map<String, Object> data = new HashMap<>();
+            data.put("username", manager.getManagerName());
+            data.put("id", manager.getManagerId());
+            data.put("roles", new String[]{"Manager"});
+            data.put("icon", manager.getHeadImg());
+            data.put("password", manager.getPassword());
+            return CommonResult.success(data);
+        }
+        request.setAttribute("token","");
+        return CommonResult.failed();
     }
 
     @PostMapping("/updateImg")

@@ -13,6 +13,7 @@ public interface UserService {
     int modifyPasswordByUserId(Long userId,String oldPassword,String newPassword);
     int modifyInformation(User user);
     List<User> queryUser(User user);
+    User queryByPhoneNum(String num);
     boolean passwordIsTrue(Long userId,String password);
     Long queryMaxUserId();
     List<User> listUser(int pageNum,int pageSize);

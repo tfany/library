@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 public class History {
     @Id
-    private Integer historyId;
+    private String historyId;
     @ManyToOne
     @JoinColumn(name="book")
     private Book book;
@@ -26,4 +26,6 @@ public class History {
     private Double money;
     private Integer num;
     private Integer status;
+    //借了多久
+    private Integer time;
 }

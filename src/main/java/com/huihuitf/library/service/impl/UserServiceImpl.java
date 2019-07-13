@@ -33,16 +33,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public User addUser(User user, MultipartFile headImg) {
 
-        //设置用户初始值
-        user.setUserId(queryMaxUserId()+1L);
-        user.setCreateTime(new Date());
-        user.setUpdateTime(new Date());
+        try {
+            if (userDao.findByPhoneNum(user.getPhoneNum()) != null) {
+                return null;
+            }
+            //设置用户初始值
+            user.setUserId(queryMaxUserId() + 1L);
+            user.setCreateTime(new Date());
+            user.setUpdateTime(new Date());
 
-        //设置用户头像 并存盘
-        addUserImg(user, headImg);
+            //设置用户头像 并存盘
+            if (headImg != null)
+                addUserImg(user, headImg);
 
 
-        return userDao.save(user);
+            return userDao.save(user);
+        }catch (Exception e){
+            return null;
+        }
 
 
     }
@@ -138,9 +146,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean passwordIsTrue(Long userId, String password) {
         if(userDao.existsById(userId)) {
-            return userDao.getOne(userId).getPassword().equals(password);
-        }else return userDao.findByPhoneNum(String.valueOf(userId)) != null
-                && userDao.findByPhoneNum(String.valueOf(userId)).getPassword().equals(password);
+            if( userDao.getOne(userId).getPassword().equals(password)){
+                userDao.findById(userId).orElse(new User()).setUpdateTime(new Date());
+                return true;
+            }
+            return false;
+        }else{
+            if( userDao.findByPhoneNum(String.valueOf(userId)) != null
+                    && userDao.findByPhoneNum(String.valueOf(userId)).getPassword().equals(password)){
+                userDao.findByPhoneNum(String.valueOf(userId)).setUpdateTime(new Date());
+                return true;
+            }
+            return false;
+        }
     }
 
     /**
@@ -151,6 +169,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> queryUser(User user) {
         return userDao.queryUserByUserIdOrNameOrPhoneNum(user.getUserId(),user.getName(),user.getPhoneNum());
+    }
+
+    @Override
+    public User queryByPhoneNum(String num) {
+        return userDao.findByPhoneNum(num);
     }
 
     /**

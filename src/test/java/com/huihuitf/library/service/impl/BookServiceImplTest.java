@@ -77,7 +77,14 @@ public class BookServiceImplTest {
 
     @Test
     public void findAllBook() {
-        List<Book> bookList = bookService.findAllBook(0,2);
+        //List<Book> bookList = bookService.findAllBook(0,2,null,null,null,null);
+        //Assert.assertEquals(bookList.size(),2);
+    }
+
+    @Test
+    public void findBook() {
+        List<Book> bookList = bookService.queryBookByNameOrAuthor("江");
+        System.out.println(bookList);
         Assert.assertEquals(bookList.size(),2);
     }
 
