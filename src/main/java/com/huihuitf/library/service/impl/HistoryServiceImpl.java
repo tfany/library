@@ -27,6 +27,9 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public History add(HistoryDto historyDto) {
+        if(historyDto.getRentCount()==0){
+            return null;
+        }
         String id = ImageUtil.getRandomFileName() + historyDto.getRentDay() + historyDto.getRentCount();
         History history = new History();
         history.setHistoryId(id);

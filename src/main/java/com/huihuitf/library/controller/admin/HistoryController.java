@@ -2,6 +2,7 @@ package com.huihuitf.library.controller.admin;
 
 import com.huihuitf.library.api.CommonResult;
 import com.huihuitf.library.dto.HistoryDto;
+import com.huihuitf.library.entity.History;
 import com.huihuitf.library.service.HistoryService;
 import com.huihuitf.library.util.PageHelp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,11 @@ public class HistoryController {
 
     @PostMapping("add")
     public CommonResult add(@RequestBody HistoryDto historyDto){
-        return CommonResult.success(historyService.add(historyDto));
+        History history= historyService.add(historyDto);
+        if(history==null){
+            return CommonResult.failed("0本咋租???");
+        }
+        return CommonResult.success(history);
     }
 
     @GetMapping("list")
