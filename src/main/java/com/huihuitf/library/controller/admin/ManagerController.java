@@ -42,7 +42,7 @@ public class ManagerController {
         String token = request.getHeader("token");
         Map<String, Object> data = new HashMap<>();
 
-        if(token!=null && !token.equals("") &&managerService.queryById(Long.valueOf(token)).getManagerId()!=null) {
+        if (token != null && !token.equals("") && managerService.queryById(Long.valueOf(token)).getManagerId() != null) {
             Manager manager = managerService.queryById(Long.valueOf(token));
             data.put("username", manager.getManagerName());
             data.put("id", manager.getManagerId());
@@ -54,15 +54,23 @@ public class ManagerController {
         return CommonResult.success("");
     }
 
-    @PostMapping("/updateImg")
-    public CommonResult update( @RequestBody Manager manager1) {
+    @PostMapping("/update")
+    public CommonResult update(@RequestBody Manager manager1) {
         String token = request.getHeader("token");
-        String img=manager1.getHeadImg();
-        Manager manager=managerService.queryById(Long.valueOf(token));
-        if(manager.getManagerId()!=null) {
-            manager.setHeadImg(img);
-            managerService.update(manager);
-            return CommonResult.success(null);
+        Manager manager = managerService.queryById(Long.valueOf(token));
+        if (manager.getManagerId() != null) {
+            if(manager1.getManagerName()!=null && !manager1.getManagerName().equals("")){
+                manager.setManagerName(manager1.getManagerName());
+            }
+            if(manager1.getPassword()!=null && !manager1.getPassword().equals("")){
+                manager.setPassword(manager1.getPassword());
+
+            }
+            manager.setHeadImg(manager1.getHeadImg());
+            if (managerService.update(manager) == 1)
+                return CommonResult.success(null);
+            else return CommonResult.failed();
+
         }
         return CommonResult.failed();
     }
@@ -72,7 +80,7 @@ public class ManagerController {
 
         try {
             String imgUrl = managerService.addFace(id, file);
-            if (imgUrl!=null)
+            if (imgUrl != null)
                 return CommonResult.success(imgUrl);
             return CommonResult.failed();
 
@@ -83,6 +91,7 @@ public class ManagerController {
 
     /**
      * 退出登录
+     *
      * @return success
      */
     @RequestMapping(value = "/logout", method = RequestMethod.POST)

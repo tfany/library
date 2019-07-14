@@ -12,6 +12,7 @@ public class BookDto{
 
 
     private String bookId;
+    private String oldId;
     private String bookName;
     private String author;
     private Double rent;

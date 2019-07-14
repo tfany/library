@@ -94,7 +94,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public int updateBook(BookDto bookParam) {
         try {
-            Book book = new Book();
+            Book book =new Book();
+            if(! bookParam.getOldId().equals(bookParam.getBookId())) {
+                bookDao.deleteById(bookParam.getOldId());
+            }
             book.setBookId(bookParam.getBookId());
             book.setBookName(bookParam.getBookName());
             book.setImg(bookParam.getImg());
@@ -134,9 +137,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto queryBookById(String bookId) {
-        Book book = bookDao.findById(bookId).orElse(null);
+        Book book = bookDao.findById(bookId).orElse(new Book());
         BookDto bookDto = new BookDto();
         bookDto.setBookId(book.getBookId());
+        bookDto.setOldId(book.getBookId());
         bookDto.setBookName(book.getBookName());
         bookDto.setAuthor(book.getAuthor());
         bookDto.setImg(book.getImg());

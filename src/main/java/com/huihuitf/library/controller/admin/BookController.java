@@ -54,7 +54,7 @@ public class BookController {
 
     public CommonResult update(@PathVariable String id, @RequestBody BookDto bookParam) {
 
-        if (!id.equals(bookParam.getBookId())) {
+        if (!id.equals(bookParam.getOldId())) {
             return CommonResult.failed("不要乱改导航地址哦");
         }
 
