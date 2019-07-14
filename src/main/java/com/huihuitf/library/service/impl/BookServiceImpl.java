@@ -51,8 +51,10 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public int saveBook(BookDto book) {
-        if (!bookDao.existsById(book.getBookId()))
+        if (!bookDao.existsById(book.getBookId())) {
+            book.setOldId(book.getBookId());
             return updateBook(book);
+        }
         else return 0;
     }
 
@@ -95,7 +97,7 @@ public class BookServiceImpl implements BookService {
     public int updateBook(BookDto bookParam) {
         try {
             Book book =new Book();
-            if(! bookParam.getOldId().equals(bookParam.getBookId())) {
+            if(!bookParam.getOldId().equals(bookParam.getBookId())) {
                 bookDao.deleteById(bookParam.getOldId());
             }
             book.setBookId(bookParam.getBookId());
