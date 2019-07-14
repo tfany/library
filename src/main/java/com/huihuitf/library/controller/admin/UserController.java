@@ -45,7 +45,7 @@ public class UserController {
                 tokenMap.put("token", String.valueOf(cardId));
                 return CommonResult.success(tokenMap);
             }
-            return CommonResult.failed();
+            return CommonResult.failed("密码错误！");
         } catch (Exception e) {
             return CommonResult.failed("密码错误！");
         }

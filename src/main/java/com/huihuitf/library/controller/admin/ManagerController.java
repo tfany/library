@@ -40,9 +40,10 @@ public class ManagerController {
     @GetMapping("/userinfo")
     public CommonResult userInfo() {
         String token = request.getHeader("token");
-        if(managerService.queryById(Long.valueOf(token))!=null) {
+        Map<String, Object> data = new HashMap<>();
+
+        if(token!=null && !token.equals("") &&managerService.queryById(Long.valueOf(token)).getManagerId()!=null) {
             Manager manager = managerService.queryById(Long.valueOf(token));
-            Map<String, Object> data = new HashMap<>();
             data.put("username", manager.getManagerName());
             data.put("id", manager.getManagerId());
             data.put("roles", new String[]{"Manager"});
@@ -50,7 +51,7 @@ public class ManagerController {
             data.put("password", manager.getPassword());
             return CommonResult.success(data);
         }
-        return CommonResult.failed();
+        return CommonResult.success("");
     }
 
     @PostMapping("/updateImg")
