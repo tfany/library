@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserDao extends JpaRepository<User,Long> {
 
-    List<User> queryUserByUserIdOrNameOrPhoneNum(Long userId, String name, String phoneNum);
+    List<User> queryUserByUserIdOrPhoneNum(Long userId, String phoneNum);
 
     User findByPhoneNum(String phoneNum);
 
